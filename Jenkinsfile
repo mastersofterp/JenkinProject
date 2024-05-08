@@ -27,6 +27,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'deploying the code'
+                sh "docker-compose down && docker-compose up -d"
                 sh 'docker run -d -p 8000:8000 mastersofterp/my-notes-app:latest'
             }
         }
