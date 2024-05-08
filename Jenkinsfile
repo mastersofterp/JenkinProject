@@ -1,35 +1,35 @@
 pipeline {
-    agent any 
-    
-    stages{
-        stage("Clone Code"){
+    agent any
+
+    stages {
+        stage('code') {
             steps {
-                echo "Cloning the code"
-                git url:"https://github.com/LondheShubham153/django-notes-app.git", branch: "main"
+                echo 'code is getting from git'
+                git url:'https://github.com/mastersofterp/JenkinProject.git/', branch:'main'
             }
         }
-        stage("Build"){
+        stage('build') {
             steps {
-                echo "Building the image"
-                sh "docker build -t my-note-app ."
+                echo 'code is build'
+                sh 'docker build -t my-notes-app .'
             }
         }
-        stage("Push to Docker Hub"){
+        stage('Image push to dockerHub') {
             steps {
-                echo "Pushing the image to docker hub"
+                echo 'Pushing the image to dockerHub'
                 withCredentials([usernamePassword(credentialsId:"dockerHub",passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
-                sh "docker tag my-note-app ${env.dockerHubUser}/my-note-app:latest"
+                sh "docker tag my-notes-app ${env.dockerHubUser}/my-notes-app:latest"
                 sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-                sh "docker push ${env.dockerHubUser}/my-note-app:latest"
+                sh "docker push ${env.dockerHubUser}/my-notes-app:latest"
                 }
             }
         }
-        stage("Deploy"){
+        stage('Deploy') {
             steps {
-                echo "Deploying the container"
-                sh "docker-compose down && docker-compose up -d"
-                
+                echo 'deploying the code'
+                sh 'docker run -d -p 8000:8000 mastersofterp/my-notes-app:latest'
             }
         }
     }
+    
 }
